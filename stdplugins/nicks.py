@@ -11,9 +11,9 @@ nicks = storage.nicks or {}
 @borg.on(events.NewMessage(pattern=r'.nick( (?P<target>\S+)|$)', outgoing=True))
 @borg.on(events.NewMessage(pattern=r'.who( (?P<target>\S+)|$)', outgoing=True))
 async def on_check_nick(event):
-    # JSON only does string keys lololol
+    # space fuckery in regex required because argument is optional and other
+    # commands start with ".nick"
     target = await get_target_id(event)
-    print(f"target {target}")
     if target not in nicks:
         await event.respond("no nick")
     else:
@@ -22,7 +22,9 @@ async def on_check_nick(event):
     await event.delete()
 
 async def get_target_id(event):
-    # must have the regex with target in it
+    """get the string target id, looking in the 'target' match group, the
+    forward from user, and the sender of the message.
+    """
     target = event.pattern_match.group("target")
     r_msg = await event.reply_message
     # if they provided an explicit target, use that over the reply user
@@ -48,7 +50,7 @@ async def get_target_id(event):
     # JSON only does string keys lololol
     return str(target)
 
-@borg.on(events.NewMessage(pattern=r'.nicks (?P<target>\S+ )?(?P<nick>.+)', outgoing=True))
+@borg.on(events.NewMessage(pattern=r'.nicks (-u (?P<target>\S+) )?(?P<nick>.+)', outgoing=True))
 async def on_nick_save(event):
     nick = event.pattern_match.group("nick")
     target = await get_target_id(event)
@@ -65,8 +67,9 @@ async def on_nick_list(event):
     await event.delete()
 
 
-@borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+)|$)', outgoing=True))
+@borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+))?', outgoing=True))
 async def on_nick_delete(event):
+    # space fuckery in regex is because argument is optional
     nick = nicks.pop(await get_target_id(event), None)
     storage.nicks = nicks
     await event.respond(f'deleted nick "{nick}"')
