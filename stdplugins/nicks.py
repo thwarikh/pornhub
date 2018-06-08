@@ -15,7 +15,7 @@ async def on_check_nick(event):
     target = await get_target_id(event)
     print(f"target {target}")
     if target not in nicks:
-        await event.respond("no")
+        await event.respond("no nick")
     else:
         await event.respond(f"nick: {nicks[target]}")
 
@@ -54,6 +54,7 @@ async def on_nick_save(event):
     target = await get_target_id(event)
     nicks[target] = nick
     storage.nicks = nicks
+    await event.respond(f'set nick "{nick}" for user {target}')
     await event.delete()
 
 
@@ -66,6 +67,7 @@ async def on_nick_list(event):
 
 @borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+)|$)', outgoing=True))
 async def on_nick_delete(event):
-    nicks.pop(await get_target_id(event), None)
+    nick = nicks.pop(await get_target_id(event), None)
     storage.nicks = nicks
+    await event.respond(f'deleted nick "{nick}"')
     await event.delete()
