@@ -4,7 +4,6 @@
 import regex
 
 from telethon import events, utils
-from telethon.tl import types, functions
 
 nicks = storage.nicks or {}
 
