@@ -13,7 +13,10 @@ nicks = storage.nicks or {}
 async def on_check_nick(event):
     # space fuckery in regex required because argument is optional and other
     # commands start with ".nick"
-    target = await get_target_id(event)
+    try:
+        target = await get_target_id(event)
+    except ValueError:
+        target = None
     if target not in nicks:
         await event.respond("no nick")
     else:
@@ -30,11 +33,10 @@ async def get_target_id(event):
     # if they provided an explicit target, use that over the reply user
     if target:
         if regex.match(r'[^+]-?\d+', target):
-            ent = await borg.get_entity(int(target))
-        else:
-            ent = await borg.get_entity(target)
-        target = utils.get_peer_id(ent)
-        # TODO handle errors lol
+            target = int(target)
+
+        # might raise ValueError if no such entity
+        target = utils.get_peer_id(await borg.get_entity(target))
     elif r_msg:
         # if its a forward do the forward dude
         # otherwise do the sender
@@ -53,7 +55,11 @@ async def get_target_id(event):
 @borg.on(events.NewMessage(pattern=r'.nicks (-u (?P<target>\S+) )?(?P<nick>.+)', outgoing=True))
 async def on_nick_save(event):
     nick = event.pattern_match.group("nick")
-    target = await get_target_id(event)
+    try:
+        target = await get_target_id(event)
+    except ValueError:
+        await event.reply("who?")
+        return
     nicks[target] = nick
     storage.nicks = nicks
     await event.respond(f'set nick "{nick}" for user {target}')
@@ -70,7 +76,11 @@ async def on_nick_list(event):
 @borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+))?', outgoing=True))
 async def on_nick_delete(event):
     # space fuckery in regex is because argument is optional
-    nick = nicks.pop(await get_target_id(event), None)
+    try:
+        nick = nicks.pop(await get_target_id(event), None)
+    except ValueError:
+        await event.reply("who?")
+        return
     storage.nicks = nicks
     await event.respond(f'deleted nick "{nick}"')
     await event.delete()
