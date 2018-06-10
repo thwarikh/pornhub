@@ -7,10 +7,11 @@ from telethon import events, utils
 
 nicks = storage.nicks or {}
 
+
 @borg.on(events.NewMessage(pattern=r'.nick( (?P<target>\S+)|$)', outgoing=True))
 @borg.on(events.NewMessage(pattern=r'.who( (?P<target>\S+)|$)', outgoing=True))
 async def on_check_nick(event):
-    # space fuckery in regex required because argument is optional and other
+    # space weirdness in regex required because argument is optional and other
     # commands start with ".nick"
     try:
         target = await get_target_id(event)
@@ -22,6 +23,7 @@ async def on_check_nick(event):
         await event.respond(f"nick: {nicks[target]}")
 
     await event.delete()
+
 
 async def get_target_id(event):
     """get the string target id, looking in the 'target' match group, the
@@ -45,11 +47,11 @@ async def get_target_id(event):
             target = r_msg.from_id
     else:
         # didnt specify a target and didnt reply to anything
-        # fuck that guy
         raise ValueError
 
     # JSON only does string keys lololol
     return str(target)
+
 
 @borg.on(events.NewMessage(pattern=r'.nicks (-u (?P<target>\S+) )?(?P<nick>.+)', outgoing=True))
 async def on_nick_save(event):
@@ -74,7 +76,7 @@ async def on_nick_list(event):
 
 @borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+))?', outgoing=True))
 async def on_nick_delete(event):
-    # space fuckery in regex is because argument is optional
+    # space weirdness in regex is because argument is optional
     try:
         nick = nicks.pop(await get_target_id(event), None)
     except ValueError:
