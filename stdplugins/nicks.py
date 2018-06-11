@@ -11,7 +11,7 @@ nicks = storage.nicks or {}
 @borg.on(events.NewMessage(pattern=r'.nick( (?P<target>\S+)|$)', outgoing=True))
 @borg.on(events.NewMessage(pattern=r'.who( (?P<target>\S+)|$)', outgoing=True))
 async def on_check_nick(event):
-    # space weirdness in regex required because argument is optional and other
+    # Space weirdness in regex required because argument is optional and other
     # commands start with ".nick"
     try:
         target = await get_target_id(event)
@@ -26,27 +26,27 @@ async def on_check_nick(event):
 
 
 async def get_target_id(event):
-    """get the string target id, looking in the 'target' match group, the
-    forward from user, and the sender of the message.
+    """
+    Get the string target id, looking in the 'target' match group, the forward
+    from user, and the sender of the message.
     """
     target = event.pattern_match.group("target")
     r_msg = await event.reply_message
-    # if they provided an explicit target, use that over the reply user
+    # If they provided an explicit target, use that over the reply user
     if target:
         if regex.match(r'[^+]-?\d+', target):
             target = int(target)
 
-        # might raise ValueError if no such entity
+        # Might raise ValueError if no such entity
         target = utils.get_peer_id(await borg.get_entity(target))
     elif r_msg:
-        # if its a forward do the forward dude
-        # otherwise do the sender
+        # If it's a forward do the forwarded from, otherwise do the sender
         if r_msg.fwd_from:
             target = r_msg.fwd_from.from_id
         else:
             target = r_msg.from_id
     else:
-        # didnt specify a target and didnt reply to anything
+        # Didn't specify a target and didn't reply to anything
         raise ValueError
 
     # JSON only does string keys lololol
@@ -76,7 +76,7 @@ async def on_nick_list(event):
 
 @borg.on(events.NewMessage(pattern=r'.nickd( (?P<target>\S+))?', outgoing=True))
 async def on_nick_delete(event):
-    # space weirdness in regex is because argument is optional
+    # Space weirdness in regex is because argument is optional
     try:
         nick = nicks.pop(await get_target_id(event), None)
     except ValueError:
