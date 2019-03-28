@@ -6,7 +6,7 @@ import sys
 async def _(event):
     if event.fwd_from:
         return
-    help_string = """@R4V4N4
+    help_string = """@UniBorg
 Python {}
 Telethon {}
 
