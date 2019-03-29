@@ -36,7 +36,7 @@ def get_video_thumb(file, output=None, width=90):
         return output
 
 
-@borg.on(events.NewMessage(pattern=r"\.rename (.*)", outgoing=True))
+@borg.on(events.NewMessage(pattern=r"\.rn (.*)", outgoing=True))
 async def _(event):
     if event.fwd_from:
         return
