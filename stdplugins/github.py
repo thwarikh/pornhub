@@ -4,7 +4,7 @@ from telethon import events
 import requests
 
 
-@borg.on(events.NewMessage(pattern=r"\.github (.*)", outgoing=True))
+@borg.on(events.NewMessage(pattern=r"\.git (.*)", outgoing=True))
 async def _(event):
     if event.fwd_from:
         return
