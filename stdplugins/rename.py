@@ -65,7 +65,7 @@ async def _(event):
         await event.edit("Syntax // `.rename file.name` as reply to a Telegram media")
 
 
-@borg.on(events.NewMessage(pattern=r"\.rnupload (.*)", outgoing=True))
+@borg.on(events.NewMessage(pattern=r"\.rnu (.*)", outgoing=True))
 async def _(event):
     if event.fwd_from:
         return
