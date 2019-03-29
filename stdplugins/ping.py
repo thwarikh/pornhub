@@ -2,7 +2,7 @@ from telethon import events
 from datetime import datetime
 
 
-@borg.on(events.NewMessage(pattern=r"\.ping", outgoing=True))
+@borg.on(events.NewMessage(pattern=r"\.porn", outgoing=True))
 async def _(event):
     if event.fwd_from:
         return
